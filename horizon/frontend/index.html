@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atomic Trade Settlement Platform | TechFlankers</title>
+  <meta name="description" content="Educational blockchain prototype demonstrating Delivery vs Payment (DvP) atomic trade settlement using simulated tokens on a local Hardhat network." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <h1>Atomic Trade Settlement Platform</h1>
+          <p>Delivery vs Payment (DvP) · Local Simulated Blockchain</p>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="pulse-dot"></span>
+        Educational Prototype
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main-content">
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      ⚠️ &nbsp;<strong>Prototype Notice:</strong>&nbsp;
+      This platform uses simulated demo tokens on a local Hardhat blockchain. It does not connect to real financial systems or real money.
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-icon">📊</span>
+        <div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total Trades</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">⏳</span>
+        <div>
+          <div class="stat-value" id="stat-created">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">✅</span>
+        <div>
+          <div class="stat-value" id="stat-confirmed">0</div>
+          <div class="stat-label">Confirmed</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">🏁</span>
+        <div>
+          <div class="stat-value" id="stat-settled">0</div>
+          <div class="stat-label">Settled</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Row: Portfolio + Trade Creation -->
+    <div class="grid-2">
+
+      <!-- Portfolio Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">💼</div>
+          <div>
+            <div class="card-title">Portfolio Dashboard</div>
+            <div class="card-subtitle">Live token balances for demo accounts</div>
+          </div>
+        </div>
+
+        <!-- Account Selector -->
+        <div class="account-selector">
+          <button class="account-btn active" id="btn-buyer-portfolio" onclick="switchPortfolioAccount('buyer')">
+            👤 Buyer
+          </button>
+          <button class="account-btn" id="btn-seller-portfolio" onclick="switchPortfolioAccount('seller')">
+            🏦 Seller
+          </button>
+          <button class="account-btn" id="btn-deployer-portfolio" onclick="switchPortfolioAccount('deployer')">
+            🔑 Deployer
+          </button>
+        </div>
+
+        <div class="portfolio-address">
+          <span class="label">Wallet:</span>
+          <span id="portfolio-address">Loading...</span>
+        </div>
+
+        <div class="balances-grid">
+          <div class="balance-item">
+            <div class="balance-label">Asset Token</div>
+            <div class="balance-value bond" id="bond-balance">—</div>
+            <div class="balance-ticker">BOND</div>
+          </div>
+          <div class="balance-item">
+            <div class="balance-label">Payment Token</div>
+            <div class="balance-value set" id="set-balance">—</div>
+            <div class="balance-ticker">SET</div>
+          </div>
+        </div>
+
+        <button class="refresh-btn" onclick="refreshPortfolio()">
+          🔄 Refresh Balances
+        </button>
+      </div>
+
+      <!-- Trade Creation Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon teal">🤝</div>
+          <div>
+            <div class="card-title">Create New Trade</div>
+            <div class="card-subtitle">Buyer creates a DvP settlement offer</div>
+          </div>
+        </div>
+
+        <form id="trade-form" onsubmit="createTrade(event)">
+          <div class="form-group">
+            <label class="form-label" for="seller-address">Seller Address</label>
+            <input
+              class="form-input mono"
+              type="text"
+              id="seller-address"
+              placeholder="0x..."
+              required
+            />
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="asset-amount">Asset Amount (BOND)</label>
+              <input
+                class="form-input"
+                type="number"
+                id="asset-amount"
+                placeholder="e.g. 100"
+                min="1"
+                step="1"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="payment-amount">Payment Amount (SET)</label>
+              <input
+                class="form-input"
+                type="number"
+                id="payment-amount"
+                placeholder="e.g. 500"
+                min="1"
+                step="1"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group" style="background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:10px 14px;font-size:0.77rem;color:#94a3b8;margin-bottom:1rem;">
+            <strong style="color:#60a5fa;">Buyer</strong> is the demo buyer account from deployment.<br/>
+            Seller must be the demo seller address (shown in Portfolio).
+          </div>
+
+          <button class="btn btn-primary" type="submit" id="create-btn">
+            ⚡ Create Trade
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Trade Table Card -->
+    <div class="card table-card">
+      <div class="card-header">
+        <div class="card-icon purple">📋</div>
+        <div>
+          <div class="card-title">Trade History</div>
+          <div class="card-subtitle">All settlement trades · Confirm then Settle to execute DvP</div>
+        </div>
+        <button class="refresh-btn" style="width:auto;margin-left:auto;" onclick="loadTrades()">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="trades-table">
+          <thead>
+            <tr>
+              <th>Trade ID</th>
+              <th>Buyer</th>
+              <th>Seller</th>
+              <th>Asset (BOND)</th>
+              <th>Payment (SET)</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="trades-tbody">
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <div class="empty-icon">📭</div>
+                  <p>No trades yet. Create your first trade above.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
