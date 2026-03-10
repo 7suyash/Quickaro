@@ -1,0 +1,205 @@
+# =============================================================================
+# Connection Profile - Hyperledger Fabric Settlement Network
+# =============================================================================
+# Defines the gateway configuration for client applications to connect
+# to the settlement blockchain network.
+# =============================================================================
+
+name: settlement-network
+version: 1.0.0
+description: Connection profile for the real-time settlement blockchain network
+
+client:
+  organization: ExchangeOrg
+  connection:
+    timeout:
+      peer:
+        endorser: 300
+      orderer: 300
+
+# ---------------------------------------------------------------------------
+# Channels
+# ---------------------------------------------------------------------------
+channels:
+  settlementchannel:
+    orderers:
+      - orderer.settlement.com
+    peers:
+      peer0.exchange.settlement.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.broker.settlement.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.bank.settlement.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.clearing.settlement.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+      peer0.regulator.settlement.com:
+        endorsingPeer: false
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+# ---------------------------------------------------------------------------
+# Organizations
+# ---------------------------------------------------------------------------
+organizations:
+  ExchangeOrg:
+    mspid: ExchangeMSP
+    peers:
+      - peer0.exchange.settlement.com
+    certificateAuthorities:
+      - ca.exchange.settlement.com
+    adminPrivateKey:
+      path: ../organizations/exchangeOrg/users/Admin@exchange.settlement.com/msp/keystore/priv_sk
+    signedCert:
+      path: ../organizations/exchangeOrg/users/Admin@exchange.settlement.com/msp/signcerts/cert.pem
+
+  BrokerOrg:
+    mspid: BrokerMSP
+    peers:
+      - peer0.broker.settlement.com
+    certificateAuthorities:
+      - ca.broker.settlement.com
+
+  BankOrg:
+    mspid: BankMSP
+    peers:
+      - peer0.bank.settlement.com
+    certificateAuthorities:
+      - ca.bank.settlement.com
+
+  ClearingOrg:
+    mspid: ClearingMSP
+    peers:
+      - peer0.clearing.settlement.com
+    certificateAuthorities:
+      - ca.clearing.settlement.com
+
+  RegulatorOrg:
+    mspid: RegulatorMSP
+    peers:
+      - peer0.regulator.settlement.com
+    certificateAuthorities:
+      - ca.regulator.settlement.com
+
+# ---------------------------------------------------------------------------
+# Orderers
+# ---------------------------------------------------------------------------
+orderers:
+  orderer.settlement.com:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.settlement.com
+      grpc-max-send-message-length: 15
+    tlsCACerts:
+      path: ../organizations/ordererOrg/orderers/orderer.settlement.com/tls/ca.crt
+
+# ---------------------------------------------------------------------------
+# Peers
+# ---------------------------------------------------------------------------
+peers:
+  peer0.exchange.settlement.com:
+    url: grpcs://localhost:7051
+    grpcOptions:
+      ssl-target-name-override: peer0.exchange.settlement.com
+    tlsCACerts:
+      path: ../organizations/exchangeOrg/peers/peer0.exchange.settlement.com/tls/ca.crt
+
+  peer0.broker.settlement.com:
+    url: grpcs://localhost:8051
+    grpcOptions:
+      ssl-target-name-override: peer0.broker.settlement.com
+    tlsCACerts:
+      path: ../organizations/brokerOrg/peers/peer0.broker.settlement.com/tls/ca.crt
+
+  peer0.bank.settlement.com:
+    url: grpcs://localhost:9051
+    grpcOptions:
+      ssl-target-name-override: peer0.bank.settlement.com
+    tlsCACerts:
+      path: ../organizations/bankOrg/peers/peer0.bank.settlement.com/tls/ca.crt
+
+  peer0.clearing.settlement.com:
+    url: grpcs://localhost:10051
+    grpcOptions:
+      ssl-target-name-override: peer0.clearing.settlement.com
+    tlsCACerts:
+      path: ../organizations/clearingOrg/peers/peer0.clearing.settlement.com/tls/ca.crt
+
+  peer0.regulator.settlement.com:
+    url: grpcs://localhost:11051
+    grpcOptions:
+      ssl-target-name-override: peer0.regulator.settlement.com
+    tlsCACerts:
+      path: ../organizations/regulatorOrg/peers/peer0.regulator.settlement.com/tls/ca.crt
+
+# ---------------------------------------------------------------------------
+# Certificate Authorities
+# ---------------------------------------------------------------------------
+certificateAuthorities:
+  ca.exchange.settlement.com:
+    url: https://localhost:7054
+    caName: ca-exchange
+    tlsCACerts:
+      path: ../organizations/exchangeOrg/ca/ca.exchange.settlement.com-cert.pem
+    httpOptions:
+      verify: false
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+
+  ca.broker.settlement.com:
+    url: https://localhost:8054
+    caName: ca-broker
+    tlsCACerts:
+      path: ../organizations/brokerOrg/ca/ca.broker.settlement.com-cert.pem
+    httpOptions:
+      verify: false
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+
+  ca.bank.settlement.com:
+    url: https://localhost:9054
+    caName: ca-bank
+    tlsCACerts:
+      path: ../organizations/bankOrg/ca/ca.bank.settlement.com-cert.pem
+    httpOptions:
+      verify: false
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+
+  ca.clearing.settlement.com:
+    url: https://localhost:10054
+    caName: ca-clearing
+    tlsCACerts:
+      path: ../organizations/clearingOrg/ca/ca.clearing.settlement.com-cert.pem
+    httpOptions:
+      verify: false
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+
+  ca.regulator.settlement.com:
+    url: https://localhost:11054
+    caName: ca-regulator
+    tlsCACerts:
+      path: ../organizations/regulatorOrg/ca/ca.regulator.settlement.com-cert.pem
+    httpOptions:
+      verify: false
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw

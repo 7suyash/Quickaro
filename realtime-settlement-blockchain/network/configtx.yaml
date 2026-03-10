@@ -1,0 +1,251 @@
+# =============================================================================
+# configtx.yaml - Channel Configuration for Settlement Network
+# =============================================================================
+# Defines organizations, policies, orderer settings, and channel profiles
+# for the real-time settlement blockchain network.
+# =============================================================================
+
+Organizations:
+
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: ../organizations/ordererOrg/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+    OrdererEndpoints:
+      - orderer.settlement.com:7050
+
+  - &ExchangeOrg
+    Name: ExchangeOrg
+    ID: ExchangeMSP
+    MSPDir: ../organizations/exchangeOrg/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ExchangeMSP.admin', 'ExchangeMSP.peer', 'ExchangeMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ExchangeMSP.admin', 'ExchangeMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ExchangeMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ExchangeMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.exchange.settlement.com
+        Port: 7051
+
+  - &BrokerOrg
+    Name: BrokerOrg
+    ID: BrokerMSP
+    MSPDir: ../organizations/brokerOrg/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('BrokerMSP.admin', 'BrokerMSP.peer', 'BrokerMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('BrokerMSP.admin', 'BrokerMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('BrokerMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('BrokerMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.broker.settlement.com
+        Port: 8051
+
+  - &BankOrg
+    Name: BankOrg
+    ID: BankMSP
+    MSPDir: ../organizations/bankOrg/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('BankMSP.admin', 'BankMSP.peer', 'BankMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('BankMSP.admin', 'BankMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('BankMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('BankMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.bank.settlement.com
+        Port: 9051
+
+  - &ClearingOrg
+    Name: ClearingOrg
+    ID: ClearingMSP
+    MSPDir: ../organizations/clearingOrg/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ClearingMSP.admin', 'ClearingMSP.peer', 'ClearingMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ClearingMSP.admin', 'ClearingMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ClearingMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ClearingMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.clearing.settlement.com
+        Port: 10051
+
+  - &RegulatorOrg
+    Name: RegulatorOrg
+    ID: RegulatorMSP
+    MSPDir: ../organizations/regulatorOrg/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('RegulatorMSP.admin', 'RegulatorMSP.peer', 'RegulatorMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('RegulatorMSP.admin')"  # Read-only for most operations
+      Admins:
+        Type: Signature
+        Rule: "OR('RegulatorMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('RegulatorMSP.peer')"
+    AnchorPeers:
+      - Host: peer0.regulator.settlement.com
+        Port: 11051
+
+# -----------------------------------------------------------------------------
+# Capabilities
+# -----------------------------------------------------------------------------
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_0: true
+
+# -----------------------------------------------------------------------------
+# Application
+# -----------------------------------------------------------------------------
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+# -----------------------------------------------------------------------------
+# Orderer
+# -----------------------------------------------------------------------------
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  Addresses:
+    - orderer.settlement.com:7050
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  EtcdRaft:
+    Consenters:
+      - Host: orderer.settlement.com
+        Port: 7050
+        ClientTLSCert: ../organizations/ordererOrg/orderers/orderer.settlement.com/tls/server.crt
+        ServerTLSCert: ../organizations/ordererOrg/orderers/orderer.settlement.com/tls/server.crt
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+  Capabilities:
+    <<: *OrdererCapabilities
+
+# -----------------------------------------------------------------------------
+# Channel
+# -----------------------------------------------------------------------------
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ChannelCapabilities
+
+# -----------------------------------------------------------------------------
+# Profiles
+# -----------------------------------------------------------------------------
+Profiles:
+
+  SettlementOrdererGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+    Consortiums:
+      SettlementConsortium:
+        Organizations:
+          - *ExchangeOrg
+          - *BrokerOrg
+          - *BankOrg
+          - *ClearingOrg
+          - *RegulatorOrg
+
+  SettlementChannel:
+    Consortium: SettlementConsortium
+    <<: *ChannelDefaults
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *ExchangeOrg
+        - *BrokerOrg
+        - *BankOrg
+        - *ClearingOrg
+        - *RegulatorOrg
+      Capabilities:
+        <<: *ApplicationCapabilities

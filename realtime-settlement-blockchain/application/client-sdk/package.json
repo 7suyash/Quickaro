@@ -1,0 +1,17 @@
+{
+  "name": "settlement-client-sdk",
+  "version": "1.0.0",
+  "description": "Client SDK for Real-Time Settlement Blockchain - Hyperledger Fabric",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "settle": "node invokeSettlement.js",
+    "query": "node queryLedger.js"
+  },
+  "dependencies": {
+    "fabric-ca-client": "^2.2.20",
+    "fabric-network": "^2.2.20"
+  },
+  "author": "Settlement Network",
+  "license": "MIT"
+}

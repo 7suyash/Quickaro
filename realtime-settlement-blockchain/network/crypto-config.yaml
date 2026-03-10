@@ -1,0 +1,67 @@
+# =============================================================================
+# crypto-config.yaml - Cryptographic Material Configuration
+# =============================================================================
+# Used by the `cryptogen` tool to generate MSP (Membership Service Provider)
+# certificates and keys for all organizations in the settlement network.
+# =============================================================================
+
+OrdererOrgs:
+  - Name: Orderer
+    Domain: settlement.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: orderer
+        SANS:
+          - localhost
+
+PeerOrgs:
+
+  - Name: ExchangeOrg
+    Domain: exchange.settlement.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1
+
+  - Name: BrokerOrg
+    Domain: broker.settlement.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 2  # Multiple broker users
+
+  - Name: BankOrg
+    Domain: bank.settlement.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1
+
+  - Name: ClearingOrg
+    Domain: clearing.settlement.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1
+
+  - Name: RegulatorOrg
+    Domain: regulator.settlement.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1
