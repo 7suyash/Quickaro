@@ -1,21 +1,28 @@
 /* ===================================================================
-   style.css - Atomic Trade Settlement Platform
-   Blueprint Sketch Aesthetic — Charcoal + Slate Blue
+   style.css - Quickaro — Atomic Trade Settlement Platform
+   Blueprint Sketch Aesthetic — Floating Island + Sidebar
    =================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Caveat:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 /* --------------- CSS Variables / Design Tokens --------------- */
 :root {
   --bg-primary: #121212;
   --bg-secondary: #161616;
   --bg-surface: #1a1a1a;
+  --bg-sidebar: #0e0e0e;
+  --bg-island: #141414;
   --border-sketch: #2a2a2a;
+  --border-island: #222222;
   --accent-blue: #3b82f6;
   --accent-blue-dim: #2563eb;
   --accent-blue-muted: rgba(59, 130, 246, 0.12);
+  --accent-yellow: #facc15;
+  --accent-royal: #1d4ed8;
   --accent-teal: #2dd4bf;
   --accent-green: #22c55e;
+  --accent-green-glow: rgba(34, 197, 94, 0.5);
+  --accent-green-glow-intense: rgba(34, 197, 94, 0.8);
   --accent-amber: #eab308;
   --accent-rose: #ef4444;
   --text-primary: #e2e2e2;
@@ -23,17 +30,27 @@
   --text-muted: #555555;
   --sketch-line: rgba(59, 130, 246, 0.18);
   --sketch-line-strong: rgba(59, 130, 246, 0.35);
+  --sidebar-width: 220px;
+  --island-gutter: 14px;
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* --------------- Reset & Base --------------- */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-primary);
+  background-color: #0a0a0a;
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.6;
@@ -41,47 +58,22 @@ body {
   overflow-x: hidden;
 }
 
-/* --------------- Parallax Background Layers --------------- */
+/* --------------- Brand Typography --------------- */
+.brand-quic {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: var(--accent-yellow);
+}
+
+.brand-karo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: var(--accent-royal);
+}
+
+/* Parallax bg hidden — grid lives on the island */
 .parallax-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.parallax-layer {
-  position: absolute;
-  inset: 0;
-  will-change: transform;
-}
-
-/* Grid pattern layer */
-.parallax-layer--grid {
-  background-image:
-    linear-gradient(var(--sketch-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--sketch-line) 1px, transparent 1px);
-  background-size: 60px 60px;
-  opacity: 0.4;
-}
-
-/* Blueprint crosshair marks */
-.parallax-layer--marks {
-  background-image:
-    radial-gradient(circle 1px, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
-  background-size: 30px 30px;
-  opacity: 0.6;
-}
-
-/* Subtle diagonal hatch */
-.parallax-layer--hatch {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 80px,
-    rgba(59, 130, 246, 0.03) 80px,
-    rgba(59, 130, 246, 0.03) 81px
-  );
+  display: none;
 }
 
 /* --------------- Landing Page --------------- */
@@ -104,38 +96,33 @@ body {
 }
 
 .landing-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 300;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(3rem, 7vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
   text-align: center;
-  line-height: 1.15;
-  margin-bottom: 0.75rem;
-}
-
-.landing-title span {
-  color: var(--accent-blue);
-  font-weight: 600;
+  line-height: 1.05;
+  margin-bottom: 1rem;
 }
 
 .landing-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   text-align: center;
   margin-bottom: 3rem;
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .landing-enter-btn {
   background: transparent;
-  border: 1px solid var(--accent-blue);
-  color: var(--accent-blue);
+  border: 1px solid var(--accent-yellow);
+  color: var(--accent-yellow);
   padding: 14px 48px;
   font-size: 0.85rem;
   font-weight: 500;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
   cursor: pointer;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -147,12 +134,12 @@ body {
   content: '';
   position: absolute;
   inset: -4px;
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.12);
   pointer-events: none;
 }
 
 .landing-enter-btn:hover {
-  background: var(--accent-blue);
+  background: var(--accent-yellow);
   color: #121212;
 }
 
@@ -165,7 +152,9 @@ body {
   text-transform: uppercase;
 }
 
-/* --------------- Dashboard Wrapper --------------- */
+/* ===============================================================
+   DASHBOARD LAYOUT — Sidebar + Floating Island
+   =============================================================== */
 .dashboard {
   position: relative;
   z-index: 1;
@@ -174,81 +163,302 @@ body {
 }
 
 .dashboard.active {
-  display: block;
+  display: flex;
   animation: dashboardEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes dashboardEnter {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* --------------- Header --------------- */
+/* --------------- Sidebar --------------- */
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-sketch);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1.25rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 150;
+}
+
+/* Pencil-stroke right edge */
+.sidebar::after {
+  content: '';
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  right: -1px;
+  width: 1px;
+  background: repeating-linear-gradient(180deg,
+      var(--sketch-line-strong) 0px,
+      var(--sketch-line-strong) 4px,
+      transparent 4px,
+      transparent 9px);
+}
+
+.sidebar-brand {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-logo {
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Neon breathing green dot ── */
+.status-dot {
+  width: 9px;
+  height: 9px;
+  background: var(--accent-green);
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow:
+    0 0 4px var(--accent-green-glow),
+    0 0 10px var(--accent-green-glow),
+    0 0 20px var(--accent-green-glow-intense),
+    0 0 40px rgba(34, 197, 94, 0.25);
+  animation: neonBreath 3s ease-in-out infinite;
+}
+
+@keyframes neonBreath {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 4px var(--accent-green-glow),
+      0 0 10px var(--accent-green-glow),
+      0 0 20px rgba(34, 197, 94, 0.3),
+      0 0 40px rgba(34, 197, 94, 0.1);
+    opacity: 1;
+  }
+
+  50% {
+    box-shadow:
+      0 0 6px var(--accent-green-glow-intense),
+      0 0 16px var(--accent-green-glow-intense),
+      0 0 32px var(--accent-green-glow),
+      0 0 56px rgba(34, 197, 94, 0.35);
+    opacity: 0.85;
+  }
+}
+
+.status-label {
+  font-size: 0.58rem;
+  color: var(--accent-green);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+/* Sidebar divider */
+.sidebar-divider {
+  height: 1px;
+  margin: 1rem 0;
+  background: repeating-linear-gradient(90deg,
+      var(--border-sketch) 0px,
+      var(--border-sketch) 4px,
+      transparent 4px,
+      transparent 8px);
+}
+
+/* Sidebar nav */
+.sidebar-nav {
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-nav-label {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
+}
+
+/* Role toggle */
+.role-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.role-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  transition: var(--transition);
+  letter-spacing: 0.02em;
+}
+
+.role-btn .role-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke-width: 1.5;
+}
+
+.role-btn:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-sketch);
+}
+
+.role-btn.active {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  background: var(--accent-blue-muted);
+}
+
+.role-btn.active .role-icon {
+  color: var(--accent-blue);
+}
+
+/* ── Sidebar footer — pinned to absolute bottom ── */
+.sidebar-footer {
+  margin-top: auto;
+  padding-bottom: 8px;
+}
+
+.sidebar-version {
+  font-size: 10px;
+  color: #ffffff;
+  letter-spacing: 0.06em;
+  font-family: 'Space Grotesk', sans-serif;
+  animation: softBlink 2.5s ease-in-out infinite;
+}
+
+.sidebar-clock {
+  font-size: 10px;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.04em;
+  animation: softBlink 2.5s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+@keyframes softBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+/* ===============================================================
+   MAIN PANEL — offset by sidebar width
+   =============================================================== */
+.main-panel {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: 100vh;
+  padding: var(--island-gutter);
+}
+
+/* ── Floating Island container ── */
+.island {
+  background: var(--bg-island);
+  border: 1px solid var(--border-island);
+  border-radius: 10px;
+  min-height: calc(100vh - var(--island-gutter) * 2);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Blueprint grid ON the island */
+.island::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(var(--sketch-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sketch-line) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.35;
+}
+
+/* Diagonal hatch ON the island */
+.island::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(-45deg,
+    transparent, transparent 80px,
+    rgba(59, 130, 246, 0.04) 80px,
+    rgba(59, 130, 246, 0.04) 81px);
+}
+
+/* ===============================================================
+   HEADER inside Island
+   =============================================================== */
 .header {
-  background: var(--bg-primary);
+  background: var(--bg-island);
   border-bottom: 1px solid var(--border-sketch);
   padding: 0 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
+  border-radius: 10px 10px 0 0;
 }
 
-/* Pencil-stroke bottom border effect */
 .header::after {
   content: '';
   position: absolute;
   bottom: -1px;
-  left: 5%;
-  right: 5%;
+  left: 3%;
+  right: 3%;
   height: 1px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--accent-blue) 0px,
-    var(--accent-blue) 8px,
-    transparent 8px,
-    transparent 12px
-  );
-  opacity: 0.4;
+  background: repeating-linear-gradient(90deg,
+      var(--accent-blue) 0px,
+      var(--accent-blue) 8px,
+      transparent 8px,
+      transparent 12px);
+  opacity: 0.3;
 }
 
 .header-inner {
   max-width: 1400px;
   margin: 0 auto;
-  height: 56px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-mark {
-  width: 8px;
-  height: 8px;
-  background: var(--accent-blue);
-  flex-shrink: 0;
-}
-
-.logo-text h1 {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  letter-spacing: 0.04em;
-}
-
-.logo-text p {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  font-weight: 400;
-  letter-spacing: 0.03em;
-}
-
-/* Stats Hover Menu (3-dot) */
+/* ===============================================================
+   3-DOT STATS MENU — Glassmorphism hover overlay
+   =============================================================== */
 .stats-menu {
   position: relative;
 }
@@ -256,16 +466,17 @@ body {
 .stats-menu-trigger {
   background: transparent;
   border: 1px solid var(--border-sketch);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
   transition: var(--transition);
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  border-radius: 4px;
 }
 
 .stats-menu-trigger:hover {
@@ -273,58 +484,79 @@ body {
   color: var(--accent-blue);
 }
 
-.stats-dropdown {
+.stats-overlay {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   right: 0;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sketch);
-  padding: 12px 16px;
-  min-width: 200px;
+  min-width: 240px;
+  padding: 18px 20px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-4px);
-  transition: var(--transition);
-  z-index: 200;
+  transform: translateY(-6px) scale(0.98);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 300;
+
+  /* Glassmorphism */
+  background: rgba(20, 20, 20, 0.75);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
-.stats-menu:hover .stats-dropdown {
+.stats-menu:hover .stats-overlay {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  font-size: 0.75rem;
-}
-
-.stat-row:not(:last-child) {
-  border-bottom: 1px dashed var(--border-sketch);
-}
-
-.stat-row-label {
+.stats-overlay-title {
+  font-size: 0.58rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
 }
 
-.stat-row-value {
-  color: var(--text-primary);
+.stats-overlay-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stats-overlay-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stats-overlay-val {
+  font-size: 1.2rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: 1;
 }
 
-/* --------------- Breadcrumb --------------- */
+.stats-overlay-lbl {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ===============================================================
+   BREADCRUMB
+   =============================================================== */
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px 0 4px;
   font-size: 0.7rem;
   color: var(--text-muted);
   letter-spacing: 0.04em;
@@ -339,7 +571,9 @@ body {
   color: var(--accent-blue);
 }
 
-/* --------------- Layout --------------- */
+/* ===============================================================
+   MAIN CONTENT
+   =============================================================== */
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
@@ -354,7 +588,6 @@ body {
   position: relative;
 }
 
-/* Pencil-line vertical divider between columns */
 .canvas::before {
   content: '';
   position: absolute;
@@ -362,13 +595,11 @@ body {
   bottom: 2rem;
   left: 50%;
   width: 1px;
-  background: repeating-linear-gradient(
-    180deg,
-    var(--sketch-line-strong) 0px,
-    var(--sketch-line-strong) 4px,
-    transparent 4px,
-    transparent 8px
-  );
+  background: repeating-linear-gradient(180deg,
+      var(--sketch-line-strong) 0px,
+      var(--sketch-line-strong) 4px,
+      transparent 4px,
+      transparent 8px);
 }
 
 .canvas-section {
@@ -386,7 +617,10 @@ body {
 }
 
 @keyframes glideIn {
-  to { opacity: 1; transform: translateY(0); }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Section Label */
@@ -424,17 +658,15 @@ body {
   margin-bottom: 1.25rem;
 }
 
-/* --------------- Pencil-line Horizontal Divider --------------- */
+/* --------------- Pencil Divider --------------- */
 .pencil-divider {
   height: 1px;
   margin: 2rem 0;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--sketch-line-strong) 0px,
-    var(--sketch-line-strong) 6px,
-    transparent 6px,
-    transparent 10px
-  );
+  background: repeating-linear-gradient(90deg,
+      var(--sketch-line-strong) 0px,
+      var(--sketch-line-strong) 6px,
+      transparent 6px,
+      transparent 10px);
 }
 
 /* --------------- Portfolio --------------- */
@@ -473,7 +705,6 @@ body {
   position: relative;
 }
 
-/* Offset line-work instead of shadows */
 .balance-item::after {
   content: '';
   position: absolute;
@@ -500,8 +731,13 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.balance-value.bond { color: var(--accent-teal); }
-.balance-value.set  { color: var(--accent-blue); }
+.balance-value.bond {
+  color: var(--accent-teal);
+}
+
+.balance-value.set {
+  color: var(--accent-blue);
+}
 
 .balance-ticker {
   font-size: 0.65rem;
@@ -592,13 +828,18 @@ body {
   outline: none;
 }
 
-.form-input::placeholder { color: var(--text-muted); }
+.form-input::placeholder {
+  color: var(--text-muted);
+}
 
 .form-input:focus {
   border-bottom-color: var(--accent-blue);
 }
 
-.form-input.mono { font-family: 'Courier New', monospace; font-size: 0.8rem; }
+.form-input.mono {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+}
 
 .form-grid {
   display: grid;
@@ -742,9 +983,13 @@ tbody tr {
   transition: var(--transition);
 }
 
-tbody tr:last-child { border-bottom: 1px solid var(--border-sketch); }
+tbody tr:last-child {
+  border-bottom: 1px solid var(--border-sketch);
+}
 
-tbody tr:hover { background: rgba(59, 130, 246, 0.03); }
+tbody tr:hover {
+  background: rgba(59, 130, 246, 0.03);
+}
 
 tbody td {
   padding: 12px 16px;
@@ -813,7 +1058,9 @@ tbody td {
   color: var(--text-muted);
 }
 
-.empty-state p { font-size: 0.8rem; }
+.empty-state p {
+  font-size: 0.8rem;
+}
 
 /* --------------- Toast Notifications --------------- */
 #toast-container {
@@ -828,7 +1075,9 @@ tbody td {
 }
 
 .toast {
-  background: var(--bg-surface);
+  background: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-sketch);
   padding: 14px 18px;
   font-size: 0.8rem;
@@ -838,22 +1087,46 @@ tbody td {
   gap: 10px;
   animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transition: opacity 0.3s ease;
-  /* Offset line-work instead of drop shadow */
-  outline: 1px solid var(--border-sketch);
-  outline-offset: 3px;
+  border-radius: 6px;
 }
 
-.toast.toast-success { border-left: 2px solid var(--accent-green); }
-.toast.toast-error   { border-left: 2px solid var(--accent-rose); }
-.toast.toast-info    { border-left: 2px solid var(--accent-blue); }
+.toast.toast-success {
+  border-left: 2px solid var(--accent-green);
+}
 
-.toast-body { flex: 1; }
-.toast-title { font-weight: 600; margin-bottom: 2px; font-size: 0.78rem; }
-.toast-msg { font-size: 0.72rem; color: var(--text-secondary); }
+.toast.toast-error {
+  border-left: 2px solid var(--accent-rose);
+}
+
+.toast.toast-info {
+  border-left: 2px solid var(--accent-blue);
+}
+
+.toast-body {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+  font-size: 0.78rem;
+}
+
+.toast-msg {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
 
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* --------------- Loading Spinner --------------- */
@@ -867,20 +1140,115 @@ tbody td {
   display: inline-block;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-/* --------------- Responsive --------------- */
-@media (max-width: 860px) {
-  .main-content { padding: 1rem; }
+/* ===============================================================
+   RESPONSIVE
+   =============================================================== */
+@media (max-width: 960px) {
+  .sidebar {
+    width: 56px;
+    padding: 1rem 0.5rem;
+    overflow: hidden;
+  }
+
+  .sidebar-logo {
+    font-size: 0;
+  }
+
+  .sidebar-logo .brand-quic {
+    font-size: 1rem;
+  }
+
+  .sidebar-logo .brand-karo {
+    display: none;
+  }
+
+  .sidebar-status .status-label {
+    display: none;
+  }
+
+  .sidebar-nav-label {
+    display: none;
+  }
+
+  .role-btn span {
+    display: none;
+  }
+
+  .role-btn {
+    justify-content: center;
+    padding: 10px 8px;
+  }
+
+  .sidebar-version {
+    display: none;
+  }
+
+  .sidebar-clock {
+    font-size: 8px;
+  }
+
+  .main-panel {
+    margin-left: 56px;
+  }
+
+  :root {
+    --sidebar-width: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-panel {
+    margin-left: 0;
+    padding: 8px;
+  }
+
+  .island {
+    border-radius: 6px;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
   .canvas {
     grid-template-columns: 1fr;
   }
-  .canvas::before { display: none; }
-  .canvas-section { padding: 1.25rem 0; }
-  .form-grid { grid-template-columns: 1fr; }
-  .logo-text h1 { font-size: 0.78rem; }
-  .balances-grid { grid-template-columns: 1fr; }
-  table { min-width: 620px; }
-  .table-section { padding: 0 1rem 2rem; }
-  .landing-title { font-size: 1.6rem; }
+
+  .canvas::before {
+    display: none;
+  }
+
+  .canvas-section {
+    padding: 1.25rem 0;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .balances-grid {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    min-width: 620px;
+  }
+
+  .table-section {
+    padding: 0 1rem 2rem;
+  }
+
+  .landing-title {
+    font-size: 2.5rem;
+  }
 }

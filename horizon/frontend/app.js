@@ -1,7 +1,6 @@
 /**
- * app.js - Frontend JavaScript for Atomic Trade Settlement Platform
- * Communicates with Express backend to interact with the blockchain.
- * Blueprint Sketch UI — clean, minimal, no AI tropes.
+ * app.js - Quickaro — Atomic Trade Settlement Platform
+ * Blueprint Sketch UI with sidebar role toggle and live clock.
  */
 
 const API_BASE = "http://localhost:3001";
@@ -30,13 +29,50 @@ function initParallax() {
   }, { passive: true });
 }
 
+// ── Sidebar Clock ──────────────────────────────────────────────────
+function initClock() {
+  const clockEl = document.getElementById("sidebar-clock");
+  if (!clockEl) return;
+
+  function tick() {
+    const now = new Date();
+    clockEl.textContent = now.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  }
+
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ── Sidebar Role Toggle ───────────────────────────────────────────
+function initRoleToggle() {
+  const roleBtns = document.querySelectorAll(".role-btn");
+
+  roleBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const role = btn.dataset.role;
+      if (!role) return;
+
+      // Update sidebar toggle active state
+      roleBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      // Switch portfolio account to match role
+      switchPortfolioAccount(role);
+    });
+  });
+}
+
 // ── Landing → Dashboard Transition ─────────────────────────────────
 function initLanding() {
   const landing = document.getElementById("landing-page");
   const dashboard = document.getElementById("dashboard");
   const enterBtn = document.getElementById("enter-dashboard-btn");
 
-  // Check if user has visited before in this session
   if (sessionStorage.getItem("dashboard-visited")) {
     landing.style.display = "none";
     dashboard.classList.add("active");
@@ -58,7 +94,6 @@ function initLanding() {
 
 // ── Dashboard Entry Animations ─────────────────────────────────────
 function onDashboardReady() {
-  // Use IntersectionObserver for smooth glide-in on sections
   const sections = document.querySelectorAll(".canvas-section, .table-section");
 
   const observer = new IntersectionObserver((entries) => {
@@ -72,7 +107,8 @@ function onDashboardReady() {
 
   sections.forEach(section => observer.observe(section));
 
-  // Load data
+  initClock();
+  initRoleToggle();
   init();
 }
 
@@ -86,9 +122,6 @@ async function init() {
   }
 }
 
-/**
- * Load known Hardhat default accounts (deterministic from mnemonic).
- */
 async function loadAccounts() {
   accounts = {
     deployer: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
@@ -101,8 +134,17 @@ async function loadAccounts() {
 // ── Portfolio ────────────────────────────────────────────────────────
 async function switchPortfolioAccount(type) {
   currentPortfolioAccount = type;
+
+  // Update top account-selector tabs
   document.querySelectorAll(".account-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById(`btn-${type}-portfolio`).classList.add("active");
+  const tabBtn = document.getElementById(`btn-${type}-portfolio`);
+  if (tabBtn) tabBtn.classList.add("active");
+
+  // Sync sidebar role toggle (buyer/seller only)
+  document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("active"));
+  const roleBtn = document.getElementById(`role-${type}`);
+  if (roleBtn) roleBtn.classList.add("active");
+
   await refreshPortfolio();
 }
 
@@ -124,7 +166,6 @@ async function refreshPortfolio() {
     document.getElementById("set-balance").textContent =
       parseFloat(data.paymentBalance).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
-    // Pre-fill seller address if viewing seller portfolio
     if (currentPortfolioAccount === "seller") {
       const el = document.getElementById("seller-address");
       if (!el.value) el.value = address;
@@ -225,7 +266,6 @@ async function loadTrades() {
     if (!res.ok) throw new Error(await res.text());
     const { trades } = await res.json();
 
-    // Update stats in dropdown
     updateStats(trades);
 
     if (!trades || trades.length === 0) {

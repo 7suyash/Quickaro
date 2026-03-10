@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Atomic Trade Settlement | TechFlankers</title>
+  <title>Quickaro | Atomic Trade Settlement</title>
   <meta name="description" content="Blockchain-based DvP atomic trade settlement platform demonstrating delivery vs payment using simulated tokens." />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -18,205 +18,222 @@
 
   <!-- ============ LANDING PAGE ============ -->
   <div class="landing-page" id="landing-page">
-    <h1 class="landing-title">Atomic Trade<br/><span>Settlement</span></h1>
-    <p class="landing-subtitle">Delivery vs Payment &middot; Simulated Blockchain</p>
+    <h1 class="landing-title"><span class="brand-quic">Quic</span><span class="brand-karo">karo</span></h1>
+    <p class="landing-subtitle">Atomic Trade Settlement &middot; Delivery vs Payment</p>
     <button class="landing-enter-btn" id="enter-dashboard-btn">Enter Dashboard</button>
-    <span class="landing-version">TechFlankers &middot; v1.0</span>
+    <span class="landing-version">TechFlankers &middot; v7.3</span>
   </div>
 
   <!-- ============ DASHBOARD ============ -->
   <div class="dashboard" id="dashboard">
 
-    <!-- ── Header ── -->
-    <header class="header">
-      <div class="header-inner">
-        <div class="logo">
-          <div class="logo-mark"></div>
-          <div class="logo-text">
-            <h1>Atomic Settlement</h1>
-            <p>DvP &middot; Local Network</p>
-          </div>
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">
+          <span class="brand-quic">Quic</span><span class="brand-karo">karo</span>
         </div>
-
-        <!-- Stats behind 3-dot hover menu -->
-        <div class="stats-menu">
-          <button class="stats-menu-trigger" id="stats-trigger" aria-label="View Stats">&#8942;</button>
-          <div class="stats-dropdown" id="stats-dropdown">
-            <div class="stat-row">
-              <span class="stat-row-label">Total</span>
-              <span class="stat-row-value" id="stat-total">0</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-row-label">Pending</span>
-              <span class="stat-row-value" id="stat-created">0</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-row-label">Confirmed</span>
-              <span class="stat-row-value" id="stat-confirmed">0</span>
-            </div>
-            <div class="stat-row">
-              <span class="stat-row-label">Settled</span>
-              <span class="stat-row-value" id="stat-settled">0</span>
-            </div>
-          </div>
+        <div class="sidebar-status">
+          <span class="status-dot"></span>
+          <span class="status-label">Connected</span>
         </div>
       </div>
-    </header>
 
-    <!-- ── Main ── -->
-    <main class="main-content">
+      <!-- Pencil divider -->
+      <div class="sidebar-divider"></div>
 
-      <!-- Breadcrumb -->
-      <nav class="breadcrumb">
-        <span>Dashboard</span>
-        <span class="breadcrumb-sep">/</span>
-        <span class="breadcrumb-active">Trade Settlement</span>
-      </nav>
-
-      <!-- ── Canvas: Portfolio + Trade Creation ── -->
-      <div class="canvas">
-
-        <!-- Left: Portfolio -->
-        <div class="canvas-section" id="section-portfolio">
-          <div class="section-label">Portfolio</div>
-          <div class="section-title">Balances</div>
-          <div class="section-desc">Live token balances for demo accounts</div>
-
-          <div class="account-selector">
-            <button class="account-btn active" id="btn-buyer-portfolio" onclick="switchPortfolioAccount('buyer')">
-              Buyer
-            </button>
-            <button class="account-btn" id="btn-seller-portfolio" onclick="switchPortfolioAccount('seller')">
-              Seller
-            </button>
-            <button class="account-btn" id="btn-deployer-portfolio" onclick="switchPortfolioAccount('deployer')">
-              Deployer
-            </button>
-          </div>
-
-          <div class="portfolio-address">
-            <span class="label">Wallet</span>
-            <span id="portfolio-address">Loading...</span>
-          </div>
-
-          <div class="balances-grid">
-            <div class="balance-item">
-              <div class="balance-label">Asset Token</div>
-              <div class="balance-value bond" id="bond-balance">&mdash;</div>
-              <div class="balance-ticker">BOND</div>
-            </div>
-            <div class="balance-item">
-              <div class="balance-label">Payment Token</div>
-              <div class="balance-value set" id="set-balance">&mdash;</div>
-              <div class="balance-ticker">SET</div>
-            </div>
-          </div>
-
-          <button class="refresh-btn" onclick="refreshPortfolio()">
-            Refresh
+      <!-- Role Toggle -->
+      <div class="sidebar-nav">
+        <div class="sidebar-nav-label">Active Role</div>
+        <div class="role-toggle" id="role-toggle">
+          <button class="role-btn active" id="role-buyer" data-role="buyer">
+            <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Buyer</span>
+          </button>
+          <button class="role-btn" id="role-seller" data-role="seller">
+            <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <path d="M8 21h8M12 17v4"/>
+            </svg>
+            <span>Seller</span>
           </button>
         </div>
-
-        <!-- Right: Create Trade -->
-        <div class="canvas-section" id="section-trade">
-          <div class="section-label">New Trade</div>
-          <div class="section-title">Create Settlement Offer</div>
-          <div class="section-desc">Buyer creates a DvP settlement offer</div>
-
-          <form id="trade-form" onsubmit="createTrade(event)">
-            <div class="form-group">
-              <label class="form-label" for="seller-address">Seller Address</label>
-              <input
-                class="form-input mono"
-                type="text"
-                id="seller-address"
-                placeholder="0x..."
-                required
-              />
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="form-label" for="asset-amount">Asset Amount (BOND)</label>
-                <input
-                  class="form-input"
-                  type="number"
-                  id="asset-amount"
-                  placeholder="e.g. 100"
-                  min="1"
-                  step="1"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="payment-amount">Payment Amount (SET)</label>
-                <input
-                  class="form-input"
-                  type="number"
-                  id="payment-amount"
-                  placeholder="e.g. 500"
-                  min="1"
-                  step="1"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="form-note">
-              <strong>Buyer</strong> is the demo buyer account from deployment.<br/>
-              Seller must be the demo seller address (shown in Portfolio).
-            </div>
-
-            <button class="btn btn-primary" type="submit" id="create-btn">
-              Create Trade
-            </button>
-          </form>
-        </div>
-
       </div>
 
-      <!-- Pencil-line divider -->
-      <div class="pencil-divider"></div>
+      <!-- Footer: version + clock pinned to bottom -->
+      <div class="sidebar-footer">
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-version">v7.3</div>
+        <div class="sidebar-clock" id="sidebar-clock">--:--:--</div>
+      </div>
+    </aside>
 
-      <!-- ── Trade History ── -->
-      <div class="table-section" id="section-history">
-        <div class="table-header">
-          <div>
-            <div class="section-label">History</div>
-            <div class="section-title">Trade Ledger</div>
-          </div>
-          <button class="refresh-btn" onclick="loadTrades()">
-            Refresh
-          </button>
-        </div>
+    <!-- ── Main Panel (floating island) ── -->
+    <div class="main-panel">
+      <div class="island">
 
-        <div class="table-wrapper">
-          <table id="trades-table">
-            <thead>
-              <tr>
-                <th>Trade ID</th>
-                <th>Buyer</th>
-                <th>Seller</th>
-                <th>Asset (BOND)</th>
-                <th>Payment (SET)</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="trades-tbody">
-              <tr>
-                <td colspan="7">
-                  <div class="empty-state">
-                    <p>No trades yet. Create your first trade above.</p>
+        <!-- Header -->
+        <header class="header">
+          <div class="header-inner">
+            <nav class="breadcrumb">
+              <span>Dashboard</span>
+              <span class="breadcrumb-sep">/</span>
+              <span class="breadcrumb-active">Trade Settlement</span>
+            </nav>
+
+            <!-- 3-dot stats hover menu -->
+            <div class="stats-menu">
+              <button class="stats-menu-trigger" aria-label="View Stats">&#8943;</button>
+              <div class="stats-overlay">
+                <div class="stats-overlay-title">System Stats</div>
+                <div class="stats-overlay-grid">
+                  <div class="stats-overlay-item">
+                    <span class="stats-overlay-val" id="stat-total">0</span>
+                    <span class="stats-overlay-lbl">Total</span>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+                  <div class="stats-overlay-item">
+                    <span class="stats-overlay-val" id="stat-created">0</span>
+                    <span class="stats-overlay-lbl">Pending</span>
+                  </div>
+                  <div class="stats-overlay-item">
+                    <span class="stats-overlay-val" id="stat-confirmed">0</span>
+                    <span class="stats-overlay-lbl">Confirmed</span>
+                  </div>
+                  <div class="stats-overlay-item">
+                    <span class="stats-overlay-val" id="stat-settled">0</span>
+                    <span class="stats-overlay-lbl">Settled</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
 
-    </main>
+        <!-- Main Content -->
+        <main class="main-content">
+
+          <!-- ── Canvas: Portfolio + Trade Creation ── -->
+          <div class="canvas">
+
+            <!-- Left: Portfolio -->
+            <div class="canvas-section" id="section-portfolio">
+              <div class="section-label">Portfolio</div>
+              <div class="section-title">Balances</div>
+              <div class="section-desc">Live token balances for active account</div>
+
+              <div class="account-selector">
+                <button class="account-btn active" id="btn-buyer-portfolio" onclick="switchPortfolioAccount('buyer')">
+                  Buyer
+                </button>
+                <button class="account-btn" id="btn-seller-portfolio" onclick="switchPortfolioAccount('seller')">
+                  Seller
+                </button>
+                <button class="account-btn" id="btn-deployer-portfolio" onclick="switchPortfolioAccount('deployer')">
+                  Deployer
+                </button>
+              </div>
+
+              <div class="portfolio-address">
+                <span class="label">Wallet</span>
+                <span id="portfolio-address">Loading...</span>
+              </div>
+
+              <div class="balances-grid">
+                <div class="balance-item">
+                  <div class="balance-label">Asset Token</div>
+                  <div class="balance-value bond" id="bond-balance">&mdash;</div>
+                  <div class="balance-ticker">BOND</div>
+                </div>
+                <div class="balance-item">
+                  <div class="balance-label">Payment Token</div>
+                  <div class="balance-value set" id="set-balance">&mdash;</div>
+                  <div class="balance-ticker">SET</div>
+                </div>
+              </div>
+
+              <button class="refresh-btn" onclick="refreshPortfolio()">Refresh</button>
+            </div>
+
+            <!-- Right: Create Trade -->
+            <div class="canvas-section" id="section-trade">
+              <div class="section-label">New Trade</div>
+              <div class="section-title">Create Settlement Offer</div>
+              <div class="section-desc">Buyer creates a DvP settlement offer</div>
+
+              <form id="trade-form" onsubmit="createTrade(event)">
+                <div class="form-group">
+                  <label class="form-label" for="seller-address">Seller Address</label>
+                  <input class="form-input mono" type="text" id="seller-address" placeholder="0x..." required />
+                </div>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="asset-amount">Asset Amount (BOND)</label>
+                    <input class="form-input" type="number" id="asset-amount" placeholder="e.g. 100" min="1" step="1" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="payment-amount">Payment Amount (SET)</label>
+                    <input class="form-input" type="number" id="payment-amount" placeholder="e.g. 500" min="1" step="1" required />
+                  </div>
+                </div>
+
+                <div class="form-note">
+                  <strong>Buyer</strong> is the demo buyer account from deployment.<br/>
+                  Seller must be the demo seller address (shown in Portfolio).
+                </div>
+
+                <button class="btn btn-primary" type="submit" id="create-btn">Create Trade</button>
+              </form>
+            </div>
+
+          </div>
+
+          <!-- Pencil-line divider -->
+          <div class="pencil-divider"></div>
+
+          <!-- ── Trade History ── -->
+          <div class="table-section" id="section-history">
+            <div class="table-header">
+              <div>
+                <div class="section-label">History</div>
+                <div class="section-title">Trade Ledger</div>
+              </div>
+              <button class="refresh-btn" onclick="loadTrades()">Refresh</button>
+            </div>
+
+            <div class="table-wrapper">
+              <table id="trades-table">
+                <thead>
+                  <tr>
+                    <th>Trade ID</th>
+                    <th>Buyer</th>
+                    <th>Seller</th>
+                    <th>Asset (BOND)</th>
+                    <th>Payment (SET)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="trades-tbody">
+                  <tr>
+                    <td colspan="7">
+                      <div class="empty-state">
+                        <p>No trades yet. Create your first trade above.</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
   </div>
 
   <!-- Toast container -->

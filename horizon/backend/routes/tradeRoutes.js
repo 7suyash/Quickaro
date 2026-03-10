@@ -130,6 +130,41 @@ router.post("/settle", async (req, res) => {
       tradeCache[tradeId].status = "Settled";
     }
 
+    // ── Log left-offs and time to terminal ──
+    let sellerAddr;
+
+    if (tradeCache[tradeId] && tradeCache[tradeId].seller) {
+      sellerAddr = tradeCache[tradeId].seller;
+    } else {
+      const tradeData = await settlementEngine.trades(tradeId);
+      sellerAddr = tradeData.seller;
+    }
+
+    if (!sellerAddr || sellerAddr === ethers.ZeroAddress) {
+      throw new Error("Invalid seller address");
+    }
+
+    const buyerAddress = await buyerWallet.getAddress();
+
+    console.log("Seller Address:", sellerAddr);
+    console.log("Buyer Address:", buyerAddress);
+    console.log("Engine Address:", engineAddress);
+    
+    // Convert addresses to format safely stringable for log
+    const buyerBOND = ethers.formatEther(await assetToken.balanceOf(buyerAddress));
+    const buyerSET = ethers.formatEther(await paymentToken.balanceOf(buyerAddress));
+    const sellerBOND = ethers.formatEther(await assetToken.balanceOf(sellerAddr));
+    const sellerSET = ethers.formatEther(await paymentToken.balanceOf(sellerAddr));
+    
+    const timeOfTx = new Date().toLocaleString();
+
+    console.log("\n============================================================");
+    console.log(`✅ TRADE #${tradeId} SETTLED AT: ${timeOfTx}`);
+    console.log("============================================================");
+    console.log(` BUYER  (${buyerAddress.slice(0, 6)}...${buyerAddress.slice(-4)}) remaining: ${buyerBOND} BOND | ${buyerSET} SET`);
+    console.log(` SELLER (${sellerAddr.slice(0, 6)}...${sellerAddr.slice(-4)}) remaining: ${sellerBOND} BOND | ${sellerSET} SET`);
+    console.log("============================================================\n");
+
     res.json({ success: true, txHash: receipt.hash });
   } catch (err) {
     console.error("settleTrade error:", err);
