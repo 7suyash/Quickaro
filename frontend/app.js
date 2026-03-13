@@ -94,7 +94,7 @@ function initLanding() {
 
 // ── Dashboard Entry Animations ─────────────────────────────────────
 function onDashboardReady() {
-  const sections = document.querySelectorAll(".canvas-section, .table-section");
+  const sections = document.querySelectorAll(".canvas-section, .table-section, .velocity-card-wrapper");
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -274,6 +274,7 @@ async function loadTrades() {
     const { trades } = await res.json();
 
     updateStats(trades);
+    updateVelocityCard(trades);
 
     if (!trades || trades.length === 0) {
       tbody.innerHTML = `
@@ -370,6 +371,159 @@ function showToast(type, title, message, duration = 5000) {
     toast.style.opacity = "0";
     setTimeout(() => toast.remove(), 300);
   }, duration);
+}
+
+// ── Transaction Velocity Card — Real Data Only ────────────────────────
+function updateVelocityCard(trades) {
+  const dataView    = document.getElementById('velocity-data-view');
+  const emptyState  = document.getElementById('velocity-empty-state');
+  const liveBadge   = document.getElementById('velocity-live-badge');
+
+  if (!dataView || !emptyState) return;
+
+  // Extract settled trades that have a valid duration
+  const settledTrades = (trades || []).filter(t => t.status === 'Settled' && t.duration && Number(t.duration) > 0);
+
+  if (settledTrades.length === 0) {
+    // Show empty state, hide data view
+    dataView.style.display = 'none';
+    emptyState.style.display = 'flex';
+    if (liveBadge) liveBadge.style.display = 'none';
+    return;
+  }
+
+  // We have real data — show data view, hide empty state
+  dataView.style.display = 'block';
+  emptyState.style.display = 'none';
+  if (liveBadge) liveBadge.style.display = 'inline-flex';
+
+  // Convert durations from ms to seconds
+  const durations = settledTrades.map(t => Number(t.duration) / 1000);
+  const tradeIds  = settledTrades.map(t => '#' + t.tradeId);
+
+  const avg    = durations.reduce((a, b) => a + b, 0) / durations.length;
+  const peak   = Math.max(...durations);
+  const min    = Math.min(...durations);
+  const latest = durations[durations.length - 1];
+
+  // Update metrics
+  const metricEl  = document.getElementById('velocity-metric');
+  const peakEl    = document.getElementById('vel-peak');
+  const minEl     = document.getElementById('vel-min');
+  const settledEl = document.getElementById('vel-settled');
+  const latestEl  = document.getElementById('vel-latest');
+
+  if (metricEl)  metricEl.textContent  = formatDuration(avg);
+  if (peakEl)    peakEl.textContent    = formatDuration(peak);
+  if (minEl)     minEl.textContent     = formatDuration(min);
+  if (settledEl) settledEl.textContent = settledTrades.length;
+  if (latestEl)  latestEl.textContent  = formatDuration(latest);
+
+  // Delta badge — compare latest to avg
+  const deltaEl    = document.getElementById('velocity-delta');
+  const deltaValEl = document.getElementById('velocity-delta-val');
+  if (deltaEl && deltaValEl && durations.length >= 2) {
+    const change = ((avg - latest) / avg * 100);
+    if (Math.abs(change) > 0.5) {
+      deltaEl.style.display = 'inline-flex';
+      deltaEl.className = 'velocity-card__metric-delta ' + (change > 0 ? 'positive' : 'negative');
+      // Flip the arrow for negative
+      const arrow = deltaEl.querySelector('svg path');
+      if (arrow) {
+        arrow.setAttribute('d', change > 0 ? 'M6 2L10 7H2L6 2Z' : 'M6 10L10 5H2L6 10Z');
+      }
+      deltaValEl.textContent = Math.abs(change).toFixed(0) + '%';
+    } else {
+      deltaEl.style.display = 'none';
+    }
+  } else if (deltaEl) {
+    deltaEl.style.display = 'none';
+  }
+
+  // Render SVG graph
+  renderVelocityGraph(durations, tradeIds);
+}
+
+function formatDuration(seconds) {
+  if (seconds >= 60) return (seconds / 60).toFixed(1) + 'm';
+  return seconds.toFixed(1) + 's';
+}
+
+function renderVelocityGraph(data, labels) {
+  const svgWidth  = 600;
+  const svgHeight = 160;
+  const padX      = 20;
+  const padTop    = 15;
+  const padBot    = 15;
+  const graphW    = svgWidth - padX * 2;
+  const graphH    = svgHeight - padTop - padBot;
+
+  const lineEl = document.getElementById('velocity-line');
+  const areaEl = document.getElementById('velocity-area');
+  const dotsEl = document.getElementById('velocity-dots');
+  const axisEl = document.getElementById('velocity-time-axis');
+
+  if (!lineEl || !areaEl || !dotsEl) return;
+
+  // If only 1 data point, render a single dot with no line
+  if (data.length === 1) {
+    const cx = svgWidth / 2;
+    const cy = svgHeight / 2;
+    lineEl.removeAttribute('d');
+    areaEl.removeAttribute('d');
+    dotsEl.innerHTML = `<circle cx="${cx}" cy="${cy}" r="5" opacity="1"><title>${data[0].toFixed(1)}s</title></circle>`;
+    if (axisEl) axisEl.innerHTML = `<span>${labels[0]}</span>`;
+    return;
+  }
+
+  // Calculate coords
+  const yMin   = Math.min(...data) * 0.7;
+  const yMax   = Math.max(...data) * 1.2;
+  const range  = yMax - yMin || 1;
+
+  const coords = data.map((val, i) => ({
+    x: padX + (i / (data.length - 1)) * graphW,
+    y: padTop + (1 - (val - yMin) / range) * graphH
+  }));
+
+  // Build smooth cubic bezier path
+  let d = `M ${coords[0].x},${coords[0].y}`;
+  for (let i = 0; i < coords.length - 1; i++) {
+    const p0 = coords[Math.max(0, i - 1)];
+    const p1 = coords[i];
+    const p2 = coords[i + 1];
+    const p3 = coords[Math.min(coords.length - 1, i + 2)];
+    const tension = 0.3;
+    const cp1x = p1.x + (p2.x - p0.x) * tension;
+    const cp1y = p1.y + (p2.y - p0.y) * tension;
+    const cp2x = p2.x - (p3.x - p1.x) * tension;
+    const cp2y = p2.y - (p3.y - p1.y) * tension;
+    d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+  }
+
+  lineEl.setAttribute('d', d);
+  areaEl.setAttribute('d', d + ` L ${coords[coords.length - 1].x},${svgHeight} L ${coords[0].x},${svgHeight} Z`);
+
+  // Render dots with tooltips
+  dotsEl.innerHTML = coords.map((c, i) =>
+    `<circle cx="${c.x}" cy="${c.y}" r="3" opacity="0.7"><title>${labels[i]}: ${data[i].toFixed(1)}s</title></circle>`
+  ).join('');
+
+  // Render time axis labels (trade IDs)
+  if (axisEl) {
+    // Show at most 7 labels evenly spaced
+    const maxLabels = Math.min(7, labels.length);
+    const step = Math.max(1, Math.floor((labels.length - 1) / (maxLabels - 1)));
+    let axisHTML = '';
+    for (let i = 0; i < labels.length; i += step) {
+      axisHTML += `<span>${labels[i]}</span>`;
+    }
+    // Always include the last label
+    if ((labels.length - 1) % step !== 0) {
+      axisHTML += `<span>${labels[labels.length - 1]}</span>`;
+    }
+    axisEl.innerHTML = axisHTML;
+  }
 }
 
 // ── Start ──────────────────────────────────────────────────────────────

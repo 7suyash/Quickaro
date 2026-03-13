@@ -234,6 +234,107 @@
             </div>
           </div>
 
+          <!-- Pencil-line divider -->
+          <div class="pencil-divider"></div>
+
+          <!-- ── Transaction Velocity Card ── -->
+          <div class="velocity-card-wrapper" id="section-velocity">
+            <div class="velocity-card">
+              <!-- Ambient glow layer -->
+              <div class="velocity-card__glow"></div>
+
+              <!-- Card content -->
+              <div class="velocity-card__content">
+                <!-- Header row -->
+                <div class="velocity-card__header">
+                  <div class="velocity-card__header-left">
+                    <span class="velocity-card__label">Transaction Velocity</span>
+                    <h3 class="velocity-card__title">Transaction Time</h3>
+                  </div>
+                  <div class="velocity-card__header-right">
+                    <span class="velocity-card__badge-live" id="velocity-live-badge" style="display:none;">
+                      <span class="velocity-card__live-dot"></span>
+                      LIVE
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Primary metric — hidden until real data -->
+                <div id="velocity-data-view" style="display:none;">
+                  <div class="velocity-card__metric-row">
+                    <span class="velocity-card__metric" id="velocity-metric">—</span>
+                    <span class="velocity-card__metric-delta" id="velocity-delta" style="display:none;">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M6 2L10 7H2L6 2Z" fill="currentColor"/>
+                      </svg>
+                      <span id="velocity-delta-val"></span>
+                    </span>
+                  </div>
+                  <p class="velocity-card__metric-sub">avg. settlement latency (from real trades)</p>
+
+                  <!-- SVG Line Graph -->
+                  <div class="velocity-card__graph-container">
+                    <svg class="velocity-card__graph" id="velocity-graph" viewBox="0 0 600 160" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="velocity-area-grad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stop-color="#00D4FF" stop-opacity="0.35"/>
+                          <stop offset="50%" stop-color="#00D4FF" stop-opacity="0.10"/>
+                          <stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+                        </linearGradient>
+                        <filter id="velocity-glow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feGaussianBlur stdDeviation="3" result="blur"/>
+                          <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <path id="velocity-area" class="velocity-card__area" fill="url(#velocity-area-grad)"/>
+                      <path id="velocity-line" class="velocity-card__line" fill="none" stroke="#00D4FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#velocity-glow)"/>
+                      <g id="velocity-dots" class="velocity-card__dots"></g>
+                    </svg>
+                    <div class="velocity-card__time-axis" id="velocity-time-axis"></div>
+                  </div>
+
+                  <!-- Footer stats row -->
+                  <div class="velocity-card__footer">
+                    <div class="velocity-card__stat">
+                      <span class="velocity-card__stat-val" id="vel-peak">—</span>
+                      <span class="velocity-card__stat-lbl">Peak</span>
+                    </div>
+                    <div class="velocity-card__stat">
+                      <span class="velocity-card__stat-val" id="vel-min">—</span>
+                      <span class="velocity-card__stat-lbl">Min</span>
+                    </div>
+                    <div class="velocity-card__stat">
+                      <span class="velocity-card__stat-val" id="vel-settled">0</span>
+                      <span class="velocity-card__stat-lbl">Settled</span>
+                    </div>
+                    <div class="velocity-card__stat">
+                      <span class="velocity-card__stat-val" id="vel-latest">—</span>
+                      <span class="velocity-card__stat-lbl">Latest</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Empty state — shown when no settlements exist -->
+                <div id="velocity-empty-state" class="velocity-card__empty">
+                  <div class="velocity-card__empty-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                      <path d="M8 36L16 24L24 30L32 16L40 20" stroke="#00D4FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.25"/>
+                      <circle cx="16" cy="24" r="2.5" fill="#00D4FF" opacity="0.2"/>
+                      <circle cx="24" cy="30" r="2.5" fill="#00D4FF" opacity="0.2"/>
+                      <circle cx="32" cy="16" r="2.5" fill="#00D4FF" opacity="0.2"/>
+                    </svg>
+                  </div>
+                  <p class="velocity-card__empty-title">No settlement data yet</p>
+                  <p class="velocity-card__empty-desc">Settle your first trade to see real transaction velocity metrics here.</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
         </main>
       </div>
     </div>

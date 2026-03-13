@@ -1147,6 +1147,284 @@ tbody td {
 }
 
 /* ===============================================================
+   TRANSACTION VELOCITY CARD — Premium Dark SaaS
+   =============================================================== */
+.velocity-card-wrapper {
+  padding: 0 2rem 3rem;
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.velocity-card-wrapper.visible {
+  animation: glideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.3s;
+}
+
+.velocity-card {
+  position: relative;
+  background: #0a0a0a;
+  border: 1px solid rgba(0, 212, 255, 0.12);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.velocity-card:hover {
+  border-color: rgba(0, 212, 255, 0.28);
+  box-shadow:
+    0 0 40px rgba(0, 212, 255, 0.06),
+    0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Ambient glow behind card */
+.velocity-card__glow {
+  position: absolute;
+  top: -40%;
+  left: 30%;
+  width: 40%;
+  height: 120%;
+  background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
+}
+
+/* Glass content layer */
+.velocity-card__content {
+  position: relative;
+  z-index: 1;
+  padding: 28px 32px 24px;
+  background: linear-gradient(
+    165deg,
+    rgba(18, 18, 18, 0.95) 0%,
+    rgba(10, 10, 10, 0.98) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ── Header ── */
+.velocity-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.velocity-card__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 6px;
+}
+
+.velocity-card__label::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 1px;
+  background: #00D4FF;
+}
+
+.velocity-card__title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Live indicator badge */
+.velocity-card__badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: #00D4FF;
+  letter-spacing: 0.12em;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 20px;
+  background: rgba(0, 212, 255, 0.06);
+}
+
+.velocity-card__live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00D4FF;
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.6), 0 0 12px rgba(0, 212, 255, 0.3);
+  animation: velocityPulse 2s ease-in-out infinite;
+}
+
+@keyframes velocityPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(0, 212, 255, 0.6), 0 0 12px rgba(0, 212, 255, 0.3); }
+  50%      { opacity: 0.5; box-shadow: 0 0 3px rgba(0, 212, 255, 0.3), 0 0 6px rgba(0, 212, 255, 0.15); }
+}
+
+/* ── Primary Metric ── */
+.velocity-card__metric-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.velocity-card__metric {
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  color: #00D4FF;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-shadow:
+    0 0 20px rgba(0, 212, 255, 0.4),
+    0 0 60px rgba(0, 212, 255, 0.15);
+  font-variant-numeric: tabular-nums;
+}
+
+.velocity-card__metric-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.velocity-card__metric-delta.positive {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.velocity-card__metric-delta.negative {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.velocity-card__metric-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  margin-bottom: 24px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Graph Container ── */
+.velocity-card__graph-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 28px;
+}
+
+.velocity-card__graph {
+  width: 100%;
+  height: 160px;
+  display: block;
+}
+
+.velocity-card__line {
+  transition: d 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.velocity-card__area {
+  transition: d 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.velocity-card__dots circle {
+  fill: #00D4FF;
+  transition: r 0.2s ease, filter 0.2s ease;
+}
+
+.velocity-card__dots circle:hover {
+  r: 5;
+  filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.8));
+  cursor: pointer;
+}
+
+/* Time axis */
+.velocity-card__time-axis {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0 0;
+}
+
+.velocity-card__time-axis span {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* ── Footer Stats ── */
+.velocity-card__footer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.velocity-card__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.velocity-card__stat-val {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e2e2e2;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.velocity-card__stat-lbl {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Empty State ── */
+.velocity-card__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px 20px;
+  text-align: center;
+}
+
+.velocity-card__empty-icon {
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.velocity-card__empty-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.velocity-card__empty-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+
+/* ===============================================================
    RESPONSIVE
    =============================================================== */
 @media (max-width: 960px) {
@@ -1250,5 +1528,25 @@ tbody td {
 
   .landing-title {
     font-size: 2.5rem;
+  }
+
+  .velocity-card-wrapper {
+    padding: 0 1rem 2rem;
+  }
+
+  .velocity-card__content {
+    padding: 20px 18px 18px;
+  }
+
+  .velocity-card__metric {
+    font-size: 2.2rem;
+  }
+
+  .velocity-card__footer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .velocity-card__graph {
+    height: 120px;
   }
 }
