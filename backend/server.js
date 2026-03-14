@@ -23,6 +23,9 @@ const tradeRoutes = require("./routes/tradeRoutes");
 app.use("/trade", tradeRoutes);
 app.use("/portfolio", tradeRoutes);
 
+const transactionHistoryRoutes = require("./routes/transactionHistory");
+app.use("/transactions", transactionHistoryRoutes);
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Atomic Settlement API running" });

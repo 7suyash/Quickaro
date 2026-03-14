@@ -20,6 +20,7 @@ const {
 // In-memory trade cache for quick front-end listing
 // (The source of truth is always the blockchain)
 const tradeCache = {};
+const { logTransaction } = require("../utils/transactionLogger");
 
 // --------------------------------------------------------
 // GET /trade/accounts
@@ -195,6 +196,23 @@ router.post("/settle", async (req, res) => {
     console.log(` BUYER  (${buyerAddress.slice(0, 6)}...${buyerAddress.slice(-4)}) remaining: ${buyerBOND} BOND | ${buyerSET} SET`);
     console.log(` SELLER (${sellerAddr.slice(0, 6)}...${sellerAddr.slice(-4)}) remaining: ${sellerBOND} BOND | ${sellerSET} SET`);
     console.log("============================================================\n");
+
+    const assetQty = ethers.formatEther(trade.assetAmount);
+    const setPayment = ethers.formatEther(trade.paymentAmount);
+    const pricePerUnit = Number(assetQty) > 0 ? (Number(setPayment) / Number(assetQty)).toString() : "0";
+
+    logTransaction({
+      tradeId: tradeId.toString(),
+      timestamp: new Date().toISOString(),
+      buyerAddress: buyerAddress,
+      sellerAddress: sellerAddr,
+      assetSymbol: "BOND",
+      quantity: assetQty,
+      price: pricePerUnit,
+      totalValue: setPayment,
+      txHash: receipt.hash,
+      status: "SETTLED"
+    });
 
     res.json({ success: true, txHash: receipt.hash, blockNumber: receipt.blockNumber, duration: durationMs });
   } catch (err) {

@@ -539,3 +539,39 @@ setInterval(() => {
     loadTrades();
   }
 }, 15000);
+
+// ── Transaction History Modal ──────────────────────────────────────────
+async function openTxHistoryModal() {
+  const modal = document.getElementById('tx-history-modal');
+  const listContainer = document.getElementById('tx-history-list');
+  modal.style.display = 'flex';
+  listContainer.innerHTML = '<div style="text-align:center; padding:1rem;">Loading...</div>';
+
+  try {
+    const res = await fetch(`${API_BASE}/transactions/history`);
+    if (!res.ok) throw new Error('Failed to fetch transaction history');
+    const files = await res.json();
+
+    if (files.length === 0) {
+      listContainer.innerHTML = '<div style="text-align:center; padding:1rem; opacity:0.6;">No transaction logs found yet.</div>';
+      return;
+    }
+
+    listContainer.innerHTML = files.map(file => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem; background:#1A202C; border-radius:6px; border:1px solid #2D3748;">
+        <span style="font-family:monospace; font-size:0.85rem;">${file}</span>
+        <button onclick="downloadTxFile('${file}')" style="background:#00D4FF; color:#0A0A0A; border:none; border-radius:4px; padding:0.4rem 0.8rem; font-size:0.8rem; cursor:pointer; font-weight:bold;">Download</button>
+      </div>
+    `).join('');
+  } catch (err) {
+    listContainer.innerHTML = `<div style="color:#F56565; padding:1rem;">Error: ${err.message}</div>`;
+  }
+}
+
+function closeTxHistoryModal() {
+  document.getElementById('tx-history-modal').style.display = 'none';
+}
+
+function downloadTxFile(fileName) {
+  window.open(`${API_BASE}/transactions/download/${fileName}`, '_blank');
+}

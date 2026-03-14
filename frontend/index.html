@@ -58,10 +58,24 @@
             <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <rect x="2" y="3" width="20" height="14" rx="2"/>
               <path d="M8 21h8M12 17v4"/>
+              <span>Seller</span>
             </svg>
-            <span>Seller</span>
           </button>
         </div>
+      </div>
+
+      <!-- Transaction History Button -->
+      <div class="sidebar-nav" style="margin-top: 1rem;">
+        <button class="role-btn" id="btn-tx-history" onclick="openTxHistoryModal()">
+          <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span>Transaction History</span>
+        </button>
       </div>
 
       <!-- Footer: version + clock pinned to bottom -->
@@ -342,6 +356,19 @@
 
   <!-- Toast container -->
   <div id="toast-container"></div>
+
+  <!-- Transaction History Modal -->
+  <div id="tx-history-modal" class="modal" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center;">
+    <div style="background:#13151A; padding:2rem; border-radius:12px; width:450px; max-width:90%; color:#E2E8F0; border: 1px solid #2D3748; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h3 style="margin:0; font-size:1.25rem;">Transaction History Logs</h3>
+        <button onclick="closeTxHistoryModal()" style="background:none; border:none; color:#A0AEC0; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+      <div id="tx-history-list" style="display:flex; flex-direction:column; gap:0.75rem; max-height:300px; overflow-y:auto; padding-right: 0.5rem;">
+        <!-- Items will be injected here -->
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
