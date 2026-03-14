@@ -78,6 +78,18 @@
         </button>
       </div>
 
+      <!-- Marketplace Button -->
+      <div class="sidebar-nav" style="margin-top: 0.25rem;">
+        <button class="role-btn" id="btn-marketplace" onclick="openMarketplace()">
+          <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span>Marketplace</span>
+        </button>
+      </div>
+
       <!-- Footer: version + clock pinned to bottom -->
       <div class="sidebar-footer">
         <div class="sidebar-divider"></div>
@@ -96,7 +108,7 @@
             <nav class="breadcrumb">
               <span>Dashboard</span>
               <span class="breadcrumb-sep">/</span>
-              <span class="breadcrumb-active">Trade Settlement</span>
+              <span class="breadcrumb-active" id="breadcrumb-current">Trade Settlement</span>
             </nav>
 
             <!-- 3-dot stats hover menu -->
@@ -130,7 +142,10 @@
         <!-- Main Content -->
         <main class="main-content">
 
-          <!-- ── Canvas: Portfolio + Trade Creation ── -->
+          <!-- DASHBOARD VIEW -->
+          <div id="dashboard-view">
+
+            <!-- ── Canvas: Portfolio + Trade Creation ── -->
           <div class="canvas">
 
             <!-- Left: Portfolio -->
@@ -186,11 +201,11 @@
 
                 <div class="form-grid">
                   <div class="form-group">
-                    <label class="form-label" for="asset-amount">Asset Amount (BOND)</label>
+                    <label class="form-label" id="lbl-asset-amount" for="asset-amount">Asset Amount (BOND)</label>
                     <input class="form-input" type="number" id="asset-amount" placeholder="e.g. 100" min="1" step="1" required />
                   </div>
                   <div class="form-group">
-                    <label class="form-label" for="payment-amount">Payment Amount (SET)</label>
+                    <label class="form-label" id="lbl-payment-amount" for="payment-amount">Payment Amount (SET)</label>
                     <input class="form-input" type="number" id="payment-amount" placeholder="e.g. 500" min="1" step="1" required />
                   </div>
                 </div>
@@ -349,6 +364,19 @@
             </div>
           </div>
 
+          </div> <!-- /#dashboard-view -->
+
+          <!-- MARKETPLACE VIEW -->
+          <div id="marketplace-view" style="display:none;">
+            <div class="section-label">Stocks</div>
+            <div class="section-title">Marketplace</div>
+            <div class="section-desc">Explore stocks from multiple companies and brokers. Start trades directly using broker wallets.</div>
+            
+            <div id="marketplace-grid" style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 2rem;">
+              <!-- Cards will be injected here -->
+            </div>
+          </div>
+
         </main>
       </div>
     </div>
@@ -370,6 +398,7 @@
     </div>
   </div>
 
+  <script src="data/marketplaceStocks.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

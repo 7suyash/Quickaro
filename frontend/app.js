@@ -61,6 +61,9 @@ function initRoleToggle() {
       roleBtns.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
+      // Go to dashboard if not already there
+      openDashboard();
+
       // Switch portfolio account to match role
       switchPortfolioAccount(role);
     });
@@ -152,7 +155,18 @@ async function switchPortfolioAccount(type) {
   const roleBtn = document.getElementById(`role-${type}`);
   if (roleBtn) roleBtn.classList.add("active");
 
+  // Show/Hide Trade Creation based on role
+  const sectionTrade = document.getElementById("section-trade");
+  if (sectionTrade) {
+    if (type === "buyer") {
+      sectionTrade.style.display = "block";
+    } else {
+      sectionTrade.style.display = "none";
+    }
+  }
+
   await refreshPortfolio();
+  await loadTrades(); // Refresh trades to update actions based on role
 }
 
 async function refreshPortfolio() {
@@ -173,9 +187,10 @@ async function refreshPortfolio() {
     document.getElementById("set-balance").textContent =
       parseFloat(data.paymentBalance).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
-    if (currentPortfolioAccount === "seller") {
-      const el = document.getElementById("seller-address");
-      if (!el.value) el.value = address;
+    if (currentPortfolioAccount === "buyer") {
+      // Optional: don't autofill seller here unless we want to, 
+      // since there could be multiple sellers. 
+      // The original code was setting seller-address to seller address when portfolio was seller.
     }
   } catch (err) {
     document.getElementById("bond-balance").textContent = "ERR";
@@ -330,9 +345,16 @@ function statusBadge(status) {
 
 function actionsHTML(trade) {
   if (trade.status === "Created") {
-    return `<button class="btn btn-confirm" onclick="confirmTrade('${trade.tradeId}', this)">Confirm</button>`;
+    // Only seller can confirm
+    if (currentPortfolioAccount === "seller") {
+      return `<button class="btn btn-confirm" onclick="confirmTrade('${trade.tradeId}', this)">Confirm</button>`;
+    }
+    return `<span class="badge" style="opacity:0.6;font-size:0.65rem;">Waiting for Seller</span>`;
   }
   if (trade.status === "Confirmed") {
+    // Only deployer/clearingHouse can settle, although right now any button might trigger it in UI
+    // For demo purposes, we will leave the settle button visible, or we could let the seller/buyer do it
+    // if backend allows. The backend route calls it using identities.
     return `<button class="btn btn-settle" onclick="settleTrade('${trade.tradeId}', this)">Settle</button>`;
   }
   return `<span class="badge badge-settled" style="opacity:0.4;font-size:0.65rem;">Complete</span>`;
@@ -574,4 +596,92 @@ function closeTxHistoryModal() {
 
 function downloadTxFile(fileName) {
   window.open(`${API_BASE}/transactions/download/${fileName}`, '_blank');
+}
+
+// ── Marketplace ──────────────────────────────────────────────────────
+function openMarketplace() {
+  document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-marketplace").classList.add("active");
+  
+  const vDash = document.getElementById("dashboard-view");
+  const vMkt = document.getElementById("marketplace-view");
+  if (vDash) vDash.style.display = "none";
+  if (vMkt) vMkt.style.display = "block";
+  
+  const crumb = document.getElementById("breadcrumb-current");
+  if (crumb) crumb.textContent = "Marketplace";
+  
+  renderMarketplace();
+}
+
+function openDashboard() {
+  const vDash = document.getElementById("dashboard-view");
+  const vMkt = document.getElementById("marketplace-view");
+  if (vDash) vDash.style.display = "block";
+  if (vMkt) vMkt.style.display = "none";
+  
+  const crumb = document.getElementById("breadcrumb-current");
+  if (crumb) crumb.textContent = "Trade Settlement";
+}
+
+function renderMarketplace() {
+  const grid = document.getElementById("marketplace-grid");
+  if (!grid || !window.marketplaceStocks) return;
+  
+  let html = "";
+  window.marketplaceStocks.forEach(stock => {
+    let brokersHtml = stock.brokers.map(b => `
+      <div style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dashed rgba(255,255,255,0.1);">
+        <div style="font-size: 0.85rem; font-weight: 500; color: #E2E8F0;">${b.name}</div>
+        <div style="font-size: 0.7rem; color: #8a8a8a; font-family: monospace; margin: 4px 0;">Wallet: <span style="user-select: all;">${b.wallet}</span></div>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <button onclick="copyBrokerWallet('${b.wallet}')" style="padding: 4px 10px; font-size: 0.65rem; background: transparent; border: 1px solid #2a2a2a; color: #8a8a8a; border-radius: 4px; cursor: pointer; transition: all 0.2s;">Copy Address</button>
+          <button onclick="sendMarketplaceTrade('${b.wallet}', '${stock.symbol}', '${stock.price}')" style="padding: 4px 10px; font-size: 0.65rem; background: #3b82f6; border: none; color: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">Send Trade</button>
+        </div>
+      </div>
+    `).join("");
+    
+    html += `
+      <div style="background: #1a1a1a; border: 1px solid #222222; border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column;">
+        <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; color: #e2e2e2; margin-bottom: 4px;">${stock.companyName}</h3>
+        <div style="font-size: 0.75rem; color: #8a8a8a;">Symbol: <span style="color: #facc15;">${stock.symbol}</span></div>
+        <div style="font-size: 0.75rem; color: #8a8a8a; margin-bottom: 1.25rem;">Price: <span style="color: #2dd4bf;">${stock.price}</span></div>
+        <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #555555; margin-bottom: 0.75rem; border-bottom: 1px solid #222; padding-bottom: 4px;">Brokers Offering This Stock:</div>
+        <div style="flex: 1;">${brokersHtml}</div>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+}
+
+function copyBrokerWallet(address) {
+  navigator.clipboard.writeText(address).then(() => {
+    showToast("success", "Address copied", "Address copied to clipboard");
+  }).catch(err => {
+    showToast("error", "Copy Failed", "Could not copy address");
+  });
+}
+
+async function sendMarketplaceTrade(brokerWallet, symbol, price) {
+  openDashboard();
+  
+  // Act as Buyer
+  await switchPortfolioAccount("buyer");
+  
+  // Pre-fill trade form
+  document.getElementById("seller-address").value = brokerWallet;
+  document.getElementById("asset-amount").value = "1";
+  
+  // Parse numeric price
+  const priceNum = price.replace(/[^0-9.]/g, '');
+  document.getElementById("payment-amount").value = priceNum;
+  
+  // Temporarily update labels for context
+  const lblAsset = document.getElementById("lbl-asset-amount");
+  const lblPayment = document.getElementById("lbl-payment-amount");
+  if(lblAsset) lblAsset.textContent = `Asset Amount (${symbol})`;
+  if(lblPayment) lblPayment.textContent = `Payment Amount (${price})`;
+  
+  // Highlight fields
+  document.getElementById("seller-address").focus();
 }

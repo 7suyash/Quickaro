@@ -29,13 +29,13 @@ contract SettlementEngine {
     
     uint256 private tradeCounter;
 
-    // Maps tradeId => Trade
+    
     mapping(uint256 => Trade) public trades;
 
-    // Array of all trade IDs for enumeration
+    
     uint256[] public tradeIds;
 
-    // Events emitted throughout the trade lifecycle
+    
     event TradeCreated(uint256 indexed tradeId, address indexed buyer, address indexed seller);
     event TradeConfirmed(uint256 indexed tradeId);
     event TradeSettled(uint256 indexed tradeId);
