@@ -1,6 +1,6 @@
-# Atomic Trade Settlement Platform
+# Quickaro
 
-> Educational Prototype -- Simulated Delivery vs Payment (DvP) using smart contracts on a local Hardhat blockchain.
+> Educational Prototype -- Simulated Delivery vs Payment (DvP) using smart contracts on a local Hardhat blockchain and on etherium sepolia testnet
 > This project does not interact with real financial systems or real money.
 
 https://drive.google.com/file/d/1yrDS5JShOH_2JlZr0zdEvxc2tmYH36tI/view?usp=sharing
@@ -32,7 +32,7 @@ horizon/
 └── README.md
 ```
 
----
+---(this was for last hardhat version , sepolia testnet version are not reconfigurd here)
 
 ## Core Technologies & Refinements
 
@@ -156,3 +156,5 @@ If either token transfer fails, the entire transaction reverts.
 - Uses demo tokens only (BOND, SET) -- no real monetary value
 - Private keys used are the well-known Hardhat test keys -- never use these on a real network
 - For educational and prototyping purposes only
+
+  
